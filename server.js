@@ -1,15 +1,16 @@
 
 const express = require("express");
+const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Nodvyt server is running!");
-});
+// Serve the Nodvyt website
+app.use(express.static(path.join(__dirname, "public")));
 
+// Health-check API
 app.get("/api/status", (req, res) => {
   res.json({
     app: "Nodvyt",
