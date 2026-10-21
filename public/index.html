@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0d14">
+  <title>Nodvyt — Device Command Center</title>
+  <style>
+    :root {
+      --bg: #0b0d14;
+      --panel: #121520;
+      --panel2: #171b28;
+      --border: #272c3b;
+      --text: #f2f4fc;
+      --muted: #9299ae;
+      --accent: #9a82ff;
+      --green: #53dda0;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .layout { display: flex; min-height: 100vh; }
+    aside {
+      width: 238px;
+      flex-shrink: 0;
+      padding: 28px 17px;
+      border-right: 1px solid var(--border);
+      background: #0e1018;
+    }
+    .brand { display: flex; gap: 11px; align-items: center;
+      font-size: 23px; font-weight: 750; letter-spacing: -.8px;
+      padding: 0 10px 36px; }
+    .logo {
+      display: grid; place-items: center; width: 38px; height: 38px;
+      border-radius: 12px; color: white; font-weight: 800;
+      background: linear-gradient(135deg, #a18aff, #654ce4);
+      box-shadow: 0 5px 25px #8065ff35;
+    }
+    .nav-label { color: #70788e; font-size: 10px; font-weight: 800;
+      letter-spacing: 1.5px; padding: 0 12px; margin: 18px 0 10px; }
+    .nav {
+      display: flex; gap: 12px; align-items: center; width: 100%;
+      border: 1px solid transparent; border-radius: 10px;
+      padding: 12px; margin: 3px 0; background: transparent;
+      color: var(--muted); text-align: left;
+    }
+    .nav:hover, .nav.active {
+      color: white; background: #8b76ff16; border-color: #8b76ff25;
+    }
+    .nav.active { color: #b8aaff; }
+    .side-note {
+      margin-top: 42px; border: 1px solid var(--border);
+      border-radius: 13px; padding: 14px; color: var(--muted);
+      font-size: 12px; line-height: 1.6;
+    }
+    main { flex: 1; min-width: 0; padding: 30px clamp(18px, 4vw, 48px); }
+    header { display: flex; justify-content: space-between; align-items: center;
+      gap: 18px; padding-bottom: 25px; border-bottom: 1px solid var(--border); }
+    .eyebrow { color: #a99aff; font-size: 11px; letter-spacing: 1.6px;
+      font-weight: 800; text-transform: uppercase; }
+    h1 { margin: 8px 0; font-size: clamp(25px, 3vw, 34px); letter-spacing: -1.1px; }
+    p { color: var(--muted); line-height: 1.6; }
+    header p { margin: 0; font-size: 13px; }
+    .avatar { width: 40px; height: 40px; border-radius: 13px;
+      display: grid; place-items: center; background: #23263a;
+      border: 1px solid var(--border); font-weight: 700; }
+    .heading-row { display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin: 29px 0 17px; }
+    h2 { margin: 0; font-size: 17px; }
+    .btn { padding: 11px 15px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--panel2); color: var(--text); font-weight: 650; font-size: 12px; }
+    .btn.primary { background: #9077ff; color: #100d20; border-color: #9077ff; }
+    .btn:hover { filter: brightness(1.12); }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 15px; }
+    .card { background: linear-gradient(145deg, #151927, #11141e);
+      border: 1px solid var(--border); border-radius: 16px; padding: 20px; min-width: 0; }
+    .stat-top { display: flex; justify-content: space-between; align-items: center; }
+    .stat-icon { display: grid; place-items: center; width: 38px; height: 38px;
+      border-radius: 12px; background: #9a82ff19; font-size: 18px; }
+    .stat-value { font-size: 29px; font-weight: 750; margin: 19px 0 5px; }
+    .stat-label { font-size: 12px; color: var(--muted); }
+    .tiny { color: #b9abff; font-size: 10px; }
+    .device-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 15px; }
+    .device-head { display: flex; gap: 13px; align-items: center; }
+    .phone-icon { display: grid; place-items: center; width: 47px; height: 52px;
+      border: 1px solid #36394b; background: #202436; border-radius: 12px; font-size: 24px; }
+    .device-name { font-weight: 700; font-size: 14px; }
+    .device-type { font-size: 11px; color: var(--muted); margin-top: 5px; }
+    .status { display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; border-radius: 20px; padding: 6px 9px;
+      color: var(--green); background: #53dda012; margin-top: 20px; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .device-footer { border-top: 1px solid var(--border); margin-top: 17px;
+      padding-top: 14px; display: flex; justify-content: space-between;
+      gap: 10px; font-size: 11px; color: var(--muted); }
+    .section { margin-top: 29px; }
+    .activity { display: flex; align-items: center; gap: 12px; padding: 14px 0;
+      border-bottom: 1px solid var(--border); }
+    .activity:last-child { border-bottom: 0; }
+    .activity-icon { width: 36px; height: 36px; border-radius: 11px;
+      display: grid; place-items: center; background: #202437; }
+    .activity-name { font-size: 12px; font-weight: 650; }
+    .activity-sub { color: var(--muted); font-size: 11px; margin-top: 4px; }
+    .activity-time { color: var(--muted); font-size: 10px; margin-left: auto; }
+    .notice { border: 1px solid #8d7aff38; background: #8d7aff0b;
+      padding: 13px 15px; border-radius: 12px; font-size: 11px;
+      color: #b9b3d8; margin-top: 20px; line-height: 1.6; }
+    .toast { position: fixed; bottom: 22px; right: 22px; max-width: calc(100vw - 44px);
+      padding: 14px 18px; border: 1px solid #46405f; border-radius: 12px;
+      background: #1c2030; box-shadow: 0 12px 35px #0007; font-size: 13px;
+      display: none; z-index: 10; }
+    .empty { color: var(--muted); padding: 25px 0; font-size: 13px; }
+    @media(max-width: 850px) {
+      aside { width: 190px; }
+      .stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .stats .card:last-child { grid-column: span 2; }
+    }
+    @media(max-width: 600px) {
+      .layout { display: block; }
+      aside { width: 100%; padding: 14px; border-right: 0;
+        border-bottom: 1px solid var(--border); }
+      .brand { padding: 0 4px 13px; }
+      .nav-label, .side-note { display: none; }
+      .nav-wrap { display: flex; overflow-x: auto; gap: 5px; }
+      .nav { width: auto; white-space: nowrap; padding: 10px; font-size: 11px; }
+      main { padding: 22px 15px 35px; }
+      header { padding-bottom: 20px; }
+      .stats, .device-grid { grid-template-columns: 1fr; }
+      .stats .card:last-child { grid-column: auto; }
+      .card { padding: 17px; }
+      .heading-row { align-items: flex-start; }
+      .btn { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand"><div class="logo">N</div> nodvyt<span style="color:#a18aff">.</span></div>
+    <div class="nav-label">WORKSPACE</div>
+    <nav class="nav-wrap">
+      <button class="nav active" data-page="Overview">◫ Overview</button>
+      <button class="nav" data-page="My Devices">▣ My Devices</button>
+      <button class="nav" data-page="File Manager">▤ File Manager</button>
+      <button class="nav" data-page="Transfers">↗ Transfers</button>
+      <button class="nav" data-page="Settings">⚙ Settings</button>
+    </nav>
+    <div class="side-note">
+      <div style="color:#d5ceff;font-weight:700;margin-bottom:5px">◈ Secure by design</div>
+      Connect only devices you own or have permission to manage.
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <div>
+        <div class="eyebrow">DEVICE COMMAND CENTER</div>
+        <h1 id="page-title">Overview</h1>
+        <p id="page-subtitle">Your connected world, at a glance.</p>
+      </div>
+      <div class="avatar" title="Demo profile">N</div>
+    </header>
+
+    <div class="heading-row">
+      <div>
+        <h2>Workspace overview</h2>
+        <p style="font-size:12px;margin:6px 0 0">A simple view of your device space.</p>
+      </div>
+      <button class="btn primary" id="pair-btn">＋ Pair a device</button>
+    </div>
+
+    <section class="stats">
+      <div class="card">
+        <div class="stat-top"><span class="stat-label">Registered devices</span><span class="stat-icon">▣</span></div>
+        <div class="stat-value" id="device-count">0</div>
+        <div class="stat-label">Demo data · no phones paired</div>
+      </div>
+      <div class="card">
+        <div class="stat-top"><span class="stat-label">Online devices</span><span class="stat-icon">⌁</span></div>
+        <div class="stat-value">0</div>
+        <div class="stat-label">Waiting for a real device connection</div>
+      </div>
+      <div class="card">
+        <div class="stat-top"><span class="stat-label">Transfers today</span><span class="stat-icon">⇄</span></div>
+        <div class="stat-value">0</div>
+        <div class="stat-label">No transfers recorded yet</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="heading-row">
+        <h2>My devices</h2>
+        <button class="btn" id="view-devices">View all →</button>
+      </div>
+      <div class="device-grid" id="device-grid">
+        <div class="card" style="grid-column:1/-1">
+          <div class="empty">No devices paired yet. Pair your own Android phone to get started.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card">
+      <h2>Recent activity</h2>
+      <div class="activity">
+        <div class="activity-icon">✦</div>
+        <div><div class="activity-name">Nodvyt workspace created</div>
+          <div class="activity-sub">Your dashboard is ready to configure.</div></div>
+        <div class="activity-time">Just now</div>
+      </div>
+      <div class="activity">
+        <div class="activity-icon">⌁</div>
+        <div><div class="activity-name">Device sync not configured</div>
+          <div class="activity-sub">Pair a device to enable sync features.</div></div>
+        <div class="activity-time">Pending</div>
+      </div>
+    </section>
+
+    <div class="notice">
+      <strong>Prototype mode:</strong> This is the dashboard interface only.
+      Login, device pairing, file access and transfer history are not connected yet.
+      No phone data is being collected.
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const toast = document.getElementById("toast");
+  let toastTimer;
+
+  function notify(message) {
+    toast.textContent = message;
+    toast.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.style.display = "none", 3000);
+  }
+
+  const descriptions = {
+    "Overview": "Your connected world, at a glance.",
+    "My Devices": "View and pair devices you are authorized to manage.",
+    "File Manager": "Your file workspace will appear here after secure pairing.",
+    "Transfers": "Track transfers after the transfer service is configured.",
+    "Settings": "Account and security settings will be added in a later step."
+  };
+
+  document.querySelectorAll(".nav").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".nav").forEach(item => item.classList.remove("active"));
+      button.classList.add("active");
+      document.getElementById("page-title").textContent = button.dataset.page;
+      document.getElementById("page-subtitle").textContent = descriptions[button.dataset.page];
+      if (button.dataset.page !== "Overview") {
+        notify(button.dataset.page + " interface selected. Feature setup comes next.");
+      }
+    });
+  });
+
+  document.getElementById("pair-btn").addEventListener("click", () => {
+    notify("Device pairing will be added next. No device has been connected.");
+  });
+
+  document.getElementById("view-devices").addEventListener("click", () => {
+    document.querySelector('[data-page="My Devices"]').click();
+  });
+
+  fetch("/api/status")
+    .then(response => {
+      if (!response.ok) throw new Error("Status request failed");
+      return response.json();
+    })
+    .then(data => {
+      if (data.app === "Nodvyt" && data.status === "online") {
+        console.log("Nodvyt backend connected.");
+      }
+    })
+    .catch(() => console.log("Backend status could not be checked."));
+</script>
+</body>
+</html>
